@@ -12,6 +12,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 // meddileware
+// http://localhost:8000/api/auth/signup
 app.use("/api/auth",authRouter)
 
 app.listen(port, () => {
