@@ -1,12 +1,40 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeftLong } from "react-icons/fa6";
+// import AuthContext, { authDataContext } from "../Context/AuthContext.jsx";
+import axios from "axios";
+import { authDataContext } from "../Context/AuthContext";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+   const { serverUrl } = useContext(authDataContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const handleLogin = async (e) => {
+    try {
+      e.preventDefault(); // 🚫 Prevents page reload when form is submitted
+
+      // 📤 Send POST request to your backend API endpoint
+      let result = await axios.post(
+        serverUrl + "/api/auth/login/",
+        {
+          email, // data from input field
+          password, // data from input field
+        },
+        {
+          withCredentials: true, // ✅ includes cookies (for login tokens etc.)
+        }
+      );
+
+      console.log(result); // 📦 Log response to check success
+    } catch (error) {
+      console.log(error); // ❌ Catch and log any errors (like 400, 500)
+    }
+  };
+
   return (
     <div className="w-[100vw] h-[100vh] flex items-center justify-center">
       <div
@@ -18,6 +46,7 @@ function Login() {
       <form
         action=""
         className="max-w-[900px] w-[90%] h-[600px] flex  justify-center flex-col md: items-start gap-[10px]"
+        onSubmit={handleLogin}
       >
         <h1 className="text-2xl md:text-4xl text-black">
           Welcom to Gaur Booking
@@ -30,6 +59,9 @@ function Login() {
             type="text"
             id="email"
             className="w-[90%] h-[40px] border-[2px] border-[#555656] rounded-lg text-[18px] px-[20px]"
+            required
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
           />
         </div>
 
@@ -41,6 +73,9 @@ function Login() {
             type={showPassword ? "text" : "password"}
             id="password"
             className="w-[90%] h-[40px] border-[2px] border-[#555656] rounded-lg text-[18px] px-[20px]"
+            required
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
           />
           {!showPassword && (
             <IoMdEye
