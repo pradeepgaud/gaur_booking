@@ -4,36 +4,40 @@ import { IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import axios from "axios";
-import { authDataContext } from "../Context/AuthContext";
+import { authDataContext } from "../Context/AuthContext.jsx";
+import { userDataContext } from "../Context/UserContext.jsx";
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { serverUrl } = useContext(authDataContext);
+  const { userData, setUserData } = useContext(userDataContext);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSignUp = async (e) => {
     try {
-      e.preventDefault(); // 🚫 Prevents page reload when form is submitted
+      e.preventDefault();
 
-      // 📤 Send POST request to your backend API endpoint
       let result = await axios.post(
         serverUrl + "/api/auth/signup/",
         {
-          name, // data from input field
-          email, // data from input field
-          password, // data from input field
+          name,
+          email,
+          password,
         },
         {
-          withCredentials: true, // ✅ includes cookies (for login tokens etc.)
+          withCredentials: true,
         }
       );
 
-      console.log(result); // 📦 Log response to check success
+      setUserData(result.data); // ✅ now result exists
+      navigate("/"); // ✅ navigate after setting data
+
+      console.log(result);
     } catch (error) {
-      console.log(error); // ❌ Catch and log any errors (like 400, 500)
+      console.log(error);
     }
   };
 

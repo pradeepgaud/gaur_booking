@@ -4,6 +4,7 @@ import connectDb from './config/db.js'
 import authRouter from './routes/AuthRoute.js'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import userRouter from './routes/UserRoute.js'
 dotenv.config()
 
 const port = process.env.PORT || 3000
@@ -18,6 +19,7 @@ app.use(cors({
 // meddileware
 // http://localhost:8000/api/auth/signup
 app.use("/api/auth", authRouter)
+app.use("/api/user", userRouter)
 
 app.listen(port, () => {
     connectDb()

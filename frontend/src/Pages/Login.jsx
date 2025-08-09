@@ -6,32 +6,38 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 // import AuthContext, { authDataContext } from "../Context/AuthContext.jsx";
 import axios from "axios";
 import { authDataContext } from "../Context/AuthContext";
+import { userDataContext } from "../Context/UserContext";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-   const { serverUrl } = useContext(authDataContext);
+  const { serverUrl } = useContext(authDataContext);
+  const { userData, setUserData } = useContext(userDataContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  
   const handleLogin = async (e) => {
     try {
-      e.preventDefault(); // 🚫 Prevents page reload when form is submitted
+      e.preventDefault();
 
-      // 📤 Send POST request to your backend API endpoint
       let result = await axios.post(
         serverUrl + "/api/auth/login/",
         {
-          email, // data from input field
-          password, // data from input field
+          email,
+          password,
         },
         {
-          withCredentials: true, // ✅ includes cookies (for login tokens etc.)
+          withCredentials: true,
         }
       );
 
-      console.log(result); // 📦 Log response to check success
+      setUserData(result.data); // ✅ only runs after result is ready
+      navigate("/"); // ✅ navigate after login success
+
+      console.log(result);
     } catch (error) {
-      console.log(error); // ❌ Catch and log any errors (like 400, 500)
+      console.log(error);
     }
   };
 
