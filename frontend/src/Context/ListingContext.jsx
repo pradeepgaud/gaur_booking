@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState } from "react";
 import axios from "axios";
 import { authDataContext } from "./AuthContext.jsx";
+import { useNavigate } from 'react-router-dom';
 
 export const listingDataContext = createContext();
 
 function ListingContext({ children }) {
+  let navigate = useNavigate()
   let [title, setTitle] = useState("");
   let [description, setDescription] = useState("");
   let [frontEndImage1, setFrontEndImage1] = useState(null);
@@ -17,9 +19,11 @@ function ListingContext({ children }) {
   let [city, setCity] = useState("");
   let [landMark, setLandMark] = useState("");
   let [category, setCategory] = useState("");
+  let [adding, setAdding] = useState(false);
   let { serverUrl } = useContext(authDataContext);
 
   const handleAddListing = async () => {
+    setAdding(true)
     try {
       let formData = new FormData();
       formData.append("title", title);
@@ -30,16 +34,46 @@ function ListingContext({ children }) {
       formData.append("rent", rent);
       formData.append("city", city);
       formData.append("landMark", landMark);
-      formData.append("categroy", category);
+      formData.append("category", category);
 
-      const result = await axios.post(
+      const res = await axios.post(
         serverUrl + "/api/listing/add",
         formData,
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-      console.log(result);
+
+      // Status check
+      if (res.status === 200) {
+        console.log("✅ 200 OK");
+      } else {
+        console.log(`⚠️ Unexpected status: ${res.status}`);
+      }
+setAdding(false)
+      console.log("Response Data:", res.data);
+      navigate("/")
+      setTitle("")
+      setDescription("")
+      setFrontEndImage1(null)
+      setFrontEndImage2(null)
+      setFrontEndImage3(null)
+      setBackEndImage1(null)
+      setBackEndImage2(null)
+      setBackEndImage3(null)
+      setRent("")
+      setCity("")
+      setLandMark("")
+      setCategory("")
+
+
     } catch (error) {
-      console.log(error);
+      setAdding(false)
+      console.error("❌ 500 ERROR");
+      console.error(error.response?.data || error.message);
     }
   };
 
@@ -68,12 +102,14 @@ function ListingContext({ children }) {
     setLandMark,
     category,
     setCategory,
+    adding,
+    setAdding,
     handleAddListing,
   };
 
   return (
     <div>
-     <listingDataContext.Provider value={value}>
+      <listingDataContext.Provider value={value}>
         {children}
       </listingDataContext.Provider>
     </div>

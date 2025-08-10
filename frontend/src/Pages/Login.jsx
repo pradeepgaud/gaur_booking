@@ -15,9 +15,10 @@ function Login() {
   const { userData, setUserData } = useContext(userDataContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+let { loading, setLoading } = useContext(authDataContext);
   
   const handleLogin = async (e) => {
+    setLoading(true)
     try {
       e.preventDefault();
 
@@ -31,12 +32,14 @@ function Login() {
           withCredentials: true,
         }
       );
+       setLoading(false)
 
       setUserData(result.data); // ✅ only runs after result is ready
       navigate("/"); // ✅ navigate after login success
 
       console.log(result);
     } catch (error) {
+      setLoading(false)
       console.log(error);
     }
   };
@@ -96,8 +99,8 @@ function Login() {
             />
           )}
         </div>
-        <button className="px-[50px] py-[10px] bg-[red] text-white rounded-lg text-[18px] md:px-[100px]">
-          Login
+        <button className="px-[50px] py-[10px] bg-[red] text-white rounded-lg text-[18px] md:px-[100px]" disabled={loading}>
+          {loading ? "Loading...": "Login"}
         </button>
         <p className="text-[18px]">
           Create New Account

@@ -80,6 +80,7 @@ function ListingPage1() {
             required
             onChange={(e) => setTitle(e.target.value)}
             value={title}
+            placeholder="_bhk house or best title"
           />
         </div>
 
@@ -169,6 +170,7 @@ function ListingPage1() {
             required
             onChange={(e) => setRent(e.target.value)}
             value={rent}
+            placeholder="Rs------ par day "
           />
         </div>
 
@@ -184,6 +186,7 @@ function ListingPage1() {
             required
             onChange={(e) => setCity(e.target.value)}
             value={city}
+            placeholder="city, country"
           />
         </div>
 

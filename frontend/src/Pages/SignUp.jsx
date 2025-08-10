@@ -15,8 +15,10 @@ function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  let { loading, setLoading } = useContext(authDataContext);
 
   const handleSignUp = async (e) => {
+    setLoading(true);
     try {
       e.preventDefault();
 
@@ -31,12 +33,13 @@ function SignUp() {
           withCredentials: true,
         }
       );
-
+      setLoading(false);
       setUserData(result.data); // ✅ now result exists
       navigate("/"); // ✅ navigate after setting data
 
       console.log(result);
     } catch (error) {
+      setLoading(false)
       console.log(error);
     }
   };
@@ -111,8 +114,8 @@ function SignUp() {
             />
           )}
         </div>
-        <button className="px-[50px] py-[10px] bg-[red] text-white rounded-lg text-[18px] md:px-[100px] mt-[20px]">
-          SignUp
+        <button className="px-[50px] py-[10px] bg-[red] text-white rounded-lg text-[18px] md:px-[100px] mt-[20px]" disabled={loading}>
+          {loading?"Loading...":"Signup"}
         </button>
         <p className="text-[18px]">
           Already have a account?

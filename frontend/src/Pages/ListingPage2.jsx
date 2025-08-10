@@ -37,7 +37,7 @@ function ListingPage2() {
       {/* Back Button */}
       <div
         className="w-12 h-12 bg-red-600 cursor-pointer fixed top-5 left-5 rounded-full flex items-center justify-center shadow-lg hover:bg-red-700 transition-all"
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/listingpage1")}
       >
         <FaArrowLeftLong className="w-6 h-6 text-white" />
       </div>
@@ -73,7 +73,7 @@ function ListingPage2() {
 
         {/* Next Button */}
         <button
-          onClick={() => navigate("/listing-page-3")}
+          onClick={() => navigate("/listingpage3")}
           className="px-8 py-3 bg-red-600 text-white rounded-lg text-lg font-medium hover:bg-red-700 shadow-md transition-all"
         >
           Next

@@ -55,7 +55,7 @@ function Nav() {
         </div>
 
         <div className="flex items-center justify-center gap-[10px] relative ">
-          <span className="text-[18px] corsor-pointer rounded-[50px] hover:bg-[#ded9d9] px-[8px] py-[5px] hidden md:block">
+          <span className="text-[18px] corsor-pointer rounded-[50px] hover:bg-[#ded9d9] px-[8px] py-[5px] hidden md:block" onClick={() =>navigate("/listingpage1")}>
             List your home
           </span>
           <button
@@ -79,17 +79,17 @@ function Nav() {
           {showPopUp && (
             <div className="w-[220px] absolute top-[110%] right-4 md:right-6 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transition-all duration-200">
               <ul className="flex flex-col text-[15px] text-gray-700 font-medium">
-                <li
+                {!userData && <li
                   className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition"
-                  onClick={() => navigate("/login")}
+                  onClick={() => {navigate("/login");setShowPopUp(false)}}
                 >
                   Login
-                </li>
-                <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition " onClick={handleLogOut}>
+                </li>}
+                {userData &&<li className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition " onClick={()=>{handleLogOut();setShowPopUp(false)}}>
                   Logout
-                </li>
+                </li>}
                 <hr className="my-1 border-gray-200" />
-                <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition">
+                <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition " onClick={() =>{navigate("/listingpage1");setShowPopUp(false)}}>
                   List your Home
                 </li>
                 <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition">
