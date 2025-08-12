@@ -37,9 +37,9 @@ function Nav() {
   };
 
   return (
-    <div>
+    <div className="fixed top-0 bg-white">
       {/* Top Navbar */}
-      <div className="w-[100vw] min-h-[80px] border-b-[1px] border-[#dcdcdc] px-[40px] flex items-center justify-between md:px-[40px]">
+      <div className="w-[100vw] min-h-[80px] border-b-[1px] border-[#dcdcdc] px-[40px] flex items-center justify-between md:px-[40px] ">
         <div>
           <img src={logo} alt="logo" className="w-[70px] md:w-[90px]" />
         </div>

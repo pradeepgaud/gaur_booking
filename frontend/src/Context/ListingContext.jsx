@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState } from "react";
 import axios from "axios";
 import { authDataContext } from "./AuthContext.jsx";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export const listingDataContext = createContext();
 
 function ListingContext({ children }) {
-  let navigate = useNavigate()
+  let navigate = useNavigate();
   let [title, setTitle] = useState("");
   let [description, setDescription] = useState("");
   let [frontEndImage1, setFrontEndImage1] = useState(null);
@@ -20,10 +21,11 @@ function ListingContext({ children }) {
   let [landMark, setLandMark] = useState("");
   let [category, setCategory] = useState("");
   let [adding, setAdding] = useState(false);
+  let [listingData, setListingData] = useState([]);
   let { serverUrl } = useContext(authDataContext);
 
   const handleAddListing = async () => {
-    setAdding(true)
+    setAdding(true);
     try {
       let formData = new FormData();
       formData.append("title", title);
@@ -36,16 +38,12 @@ function ListingContext({ children }) {
       formData.append("landMark", landMark);
       formData.append("category", category);
 
-      const res = await axios.post(
-        serverUrl + "/api/listing/add",
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await axios.post(serverUrl + "/api/listing/add", formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       // Status check
       if (res.status === 200) {
@@ -53,29 +51,42 @@ function ListingContext({ children }) {
       } else {
         console.log(`⚠️ Unexpected status: ${res.status}`);
       }
-setAdding(false)
+      setAdding(false);
       console.log("Response Data:", res.data);
-      navigate("/")
-      setTitle("")
-      setDescription("")
-      setFrontEndImage1(null)
-      setFrontEndImage2(null)
-      setFrontEndImage3(null)
-      setBackEndImage1(null)
-      setBackEndImage2(null)
-      setBackEndImage3(null)
-      setRent("")
-      setCity("")
-      setLandMark("")
-      setCategory("")
-
-
+      navigate("/");
+      setTitle("");
+      setDescription("");
+      setFrontEndImage1(null);
+      setFrontEndImage2(null);
+      setFrontEndImage3(null);
+      setBackEndImage1(null);
+      setBackEndImage2(null);
+      setBackEndImage3(null);
+      setRent("");
+      setCity("");
+      setLandMark("");
+      setCategory("");
     } catch (error) {
-      setAdding(false)
+      setAdding(false);
       console.error("❌ 500 ERROR");
       console.error(error.response?.data || error.message);
     }
   };
+
+  const getListing = async () => {
+    try {
+      let result = await axios.get(serverUrl + "/api/listing/get", {
+        withCredentials: true,
+      });
+      setListingData(result.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getListing();
+  }, []);
 
   let value = {
     title,
@@ -104,7 +115,10 @@ setAdding(false)
     setCategory,
     adding,
     setAdding,
+    listingData,
+    setListingData,
     handleAddListing,
+    getListing,
   };
 
   return (
