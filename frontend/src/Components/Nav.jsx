@@ -17,23 +17,31 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { authDataContext } from "./../Context/AuthContext";
 import { userDataContext } from "../Context/UserContext";
+import { listingDataContext } from "./../Context/ListingContext";
 
 function Nav() {
   const [showPopUp, setShowPopUp] = useState(false);
-  const {userData, setUserData} = useContext(userDataContext);
+  const { userData, setUserData } = useContext(userDataContext);
   const navigate = useNavigate();
   let { serverUrl } = useContext(authDataContext);
+  let [cate, setCate] = useState();
+  let { listingData,setListingData,newlistData,setNewListData} = useContext(listingDataContext);
 
   const handleLogOut = async () => {
     try {
       let result = await axios.post(serverUrl + "/api/auth/logout", {
         withCredentials: true,
       });
-      setUserData()
+      setUserData();
       console.log(result);
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleCategory = (category) => {
+    setCate(category);
+    setNewListData(listingData.filter((list) => list.category == category))
   };
 
   return (
@@ -55,7 +63,10 @@ function Nav() {
         </div>
 
         <div className="flex items-center justify-center gap-[10px] relative ">
-          <span className="text-[18px] corsor-pointer rounded-[50px] hover:bg-[#ded9d9] px-[8px] py-[5px] hidden md:block" onClick={() =>navigate("/listingpage1")}>
+          <span
+            className="text-[18px] corsor-pointer rounded-[50px] hover:bg-[#ded9d9] px-[8px] py-[5px] hidden md:block"
+            onClick={() => navigate("/listingpage1")}
+          >
             List your home
           </span>
           <button
@@ -67,29 +78,51 @@ function Nav() {
             <span>
               <RxHamburgerMenu className="w-[20px] h-[20px]" />
             </span>
-           {userData == null &&  <span>
-              <CgProfile className="w-[23px] h-[23px]" />
-            </span>}
+            {userData == null && (
+              <span>
+                <CgProfile className="w-[23px] h-[23px]" />
+              </span>
+            )}
 
-           {userData != null && <span className="w-[30px] h-[30px] bg-[#080808] text-[white] rounded-full flex items-center justify-center">
-              {userData?.name.slice(0,1)}
-            </span>}
-
+            {userData != null && (
+              <span className="w-[30px] h-[30px] bg-[#080808] text-[white] rounded-full flex items-center justify-center">
+                {userData?.name.slice(0, 1)}
+              </span>
+            )}
           </button>
           {showPopUp && (
             <div className="w-[220px] absolute top-[110%] right-4 md:right-6 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transition-all duration-200">
               <ul className="flex flex-col text-[15px] text-gray-700 font-medium">
-                {!userData && <li
-                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition"
-                  onClick={() => {navigate("/login");setShowPopUp(false)}}
-                >
-                  Login
-                </li>}
-                {userData &&<li className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition " onClick={()=>{handleLogOut();setShowPopUp(false)}}>
-                  Logout
-                </li>}
+                {!userData && (
+                  <li
+                    className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition"
+                    onClick={() => {
+                      navigate("/login");
+                      setShowPopUp(false);
+                    }}
+                  >
+                    Login
+                  </li>
+                )}
+                {userData && (
+                  <li
+                    className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition "
+                    onClick={() => {
+                      handleLogOut();
+                      setShowPopUp(false);
+                    }}
+                  >
+                    Logout
+                  </li>
+                )}
                 <hr className="my-1 border-gray-200" />
-                <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition " onClick={() =>{navigate("/listingpage1");setShowPopUp(false)}}>
+                <li
+                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition "
+                  onClick={() => {
+                    navigate("/listingpage1");
+                    setShowPopUp(false);
+                  }}
+                >
                   List your Home
                 </li>
                 <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition">
@@ -125,42 +158,82 @@ function Nav() {
           <h3>Trending</h3>
         </div>
 
-        <div className="flex items-center justify-center flex-col hover:border-b-[1px] border-[#a6a5a5] text-[13px] min-w-[60px]">
+        <div
+          className={`flex items-center justify-center flex-col hover:border-b-[1px]
+         border-[#a6a5a5] text-[13px] min-w-[60px] ${
+           cate == "Villa" ? "border-b-[1px] border-[#a6a5a5]" : ""
+         }`} onClick={() =>handleCategory("Villa")}
+        >
           <GiFamilyHouse className="w-[30px] h-[30px] text-black" />
           <h3>Villa</h3>
         </div>
 
-        <div className="flex items-center justify-center flex-col hover:border-b-[1px] border-[#a6a5a5] text-[13px] min-w-[60px]">
+        <div
+          className={`flex items-center justify-center flex-col hover:border-b-[1px]
+         border-[#a6a5a5] text-[13px] min-w-[60px] ${
+           cate == "FarmHouse" ? "border-b-[1px] border-[#a6a5a5]" : ""
+         }`} onClick={() =>handleCategory("FarmHouse")}
+        >
           <BiSolidBuildingHouse className="w-[30px] h-[30px] text-black " />
           <h3>Farm House</h3>
         </div>
 
-        <div className="flex items-center justify-center flex-col hover:border-b-[1px] border-[#a6a5a5] text-[13px] min-w-[60px]">
+        <div
+          className={`flex items-center justify-center flex-col hover:border-b-[1px]
+         border-[#a6a5a5] text-[13px] min-w-[60px] ${
+           cate == "PoolHouse" ? "border-b-[1px] border-[#a6a5a5]" : ""
+         }`} onClick={() =>handleCategory("PoolHouse")}
+        >
           <MdBedroomParent className="w-[30px] h-[30px] text-black" />
           <h3>Pool House</h3>
         </div>
 
-        <div className="flex items-center justify-center flex-col hover:border-b-[1px] border-[#a6a5a5] text-[13px] min-w-[60px]">
+        <div
+          className={`flex items-center justify-center flex-col hover:border-b-[1px]
+         border-[#a6a5a5] text-[13px] min-w-[60px] ${
+           cate == "Rooms" ? "border-b-[1px] border-[#a6a5a5]" : ""
+         }`} onClick={() =>handleCategory("Rooms")}
+        >
           <MdBedroomParent className="w-[30px] h-[30px] text-black" />
           <h3>Rooms</h3>
         </div>
 
-        <div className="flex items-center justify-center flex-col hover:border-b-[1px] border-[#a6a5a5] text-[13px] min-w-[60px]">
+        <div
+          className={`flex items-center justify-center flex-col hover:border-b-[1px]
+         border-[#a6a5a5] text-[13px] min-w-[60px] ${
+           cate == "Flat" ? "border-b-[1px] border-[#a6a5a5]" : ""
+         }`} onClick={() =>handleCategory("Flat")}
+        >
           <MdOutlineHouseboat className="w-[30px] h-[30px] text-black" />
           <h3>Flat</h3>
         </div>
 
-        <div className="flex items-center justify-center flex-col hover:border-b-[1px] border-[#a6a5a5] text-[13px] min-w-[60px]">
+        <div
+          className={`flex items-center justify-center flex-col hover:border-b-[1px]
+         border-[#a6a5a5] text-[13px] min-w-[60px] ${
+           cate == "PG" ? "border-b-[1px] border-[#a6a5a5]" : ""
+         }`} onClick={() =>handleCategory("PG")}
+        >
           <LuWarehouse className="w-[30px] h-[30px] text-black" />
           <h3>PG</h3>
         </div>
 
-        <div className="flex items-center justify-center flex-col hover:border-b-[1px] border-[#a6a5a5] text-[13px] min-w-[60px]">
+        <div
+          className={`flex items-center justify-center flex-col hover:border-b-[1px]
+         border-[#a6a5a5] text-[13px] min-w-[60px] ${
+           cate == "Cabins" ? "border-b-[1px] border-[#a6a5a5]" : ""
+         }`} onClick={() =>handleCategory("Cabins")}
+        >
           <HiMiniBuildingOffice className="w-[30px] h-[30px] text-black" />
           <h3>Cabins</h3>
         </div>
 
-        <div className="flex items-center justify-center flex-col hover:border-b-[1px] border-[#a6a5a5] text-[13px] min-w-[60px]">
+        <div
+          className={`flex items-center justify-center flex-col hover:border-b-[1px]
+         border-[#a6a5a5] text-[13px] min-w-[60px] ${
+           cate == "Shop" ? "border-b-[1px] border-[#a6a5a5]" : ""
+         }`} onClick={() =>handleCategory("Shop")}
+        >
           <GiVikingLonghouse className="w-[30px] h-[30px] text-black" />
           <h3>Shop</h3>
         </div>

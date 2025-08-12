@@ -22,6 +22,7 @@ function ListingContext({ children }) {
   let [category, setCategory] = useState("");
   let [adding, setAdding] = useState(false);
   let [listingData, setListingData] = useState([]);
+  let [newlistData, setNewListData] = useState([]);
   let { serverUrl } = useContext(authDataContext);
 
   const handleAddListing = async () => {
@@ -79,6 +80,7 @@ function ListingContext({ children }) {
         withCredentials: true,
       });
       setListingData(result.data);
+      setNewListData(result.data);
     } catch (error) {
       console.log(error);
     }
@@ -86,7 +88,7 @@ function ListingContext({ children }) {
 
   useEffect(() => {
     getListing();
-  }, []);
+  }, [adding]);
 
   let value = {
     title,
@@ -119,6 +121,8 @@ function ListingContext({ children }) {
     setListingData,
     handleAddListing,
     getListing,
+    newlistData,
+    setNewListData,
   };
 
   return (

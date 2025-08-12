@@ -19,8 +19,8 @@ function ListingPage2() {
   const categories = [
     { icon: <MdWhatshot className="w-8 h-8" />, label: "Trending" },
     { icon: <GiFamilyHouse className="w-8 h-8" />, label: "Villa" },
-    { icon: <BiSolidBuildingHouse className="w-8 h-8" />, label: "Farm House" },
-    { icon: <MdBedroomParent className="w-8 h-8" />, label: "Pool House" },
+    { icon: <BiSolidBuildingHouse className="w-8 h-8" />, label: "FarmHouse" },
+    { icon: <MdBedroomParent className="w-8 h-8" />, label: "PoolHouse" },
     { icon: <MdBedroomParent className="w-8 h-8" />, label: "Rooms" },
     { icon: <MdOutlineHouseboat className="w-8 h-8" />, label: "Flat" },
     { icon: <LuWarehouse className="w-8 h-8" />, label: "PG" },
