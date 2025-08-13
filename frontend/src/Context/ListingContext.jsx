@@ -23,6 +23,7 @@ function ListingContext({ children }) {
   let [adding, setAdding] = useState(false);
   let [listingData, setListingData] = useState([]);
   let [newlistData, setNewListData] = useState([]);
+  let [cardDetails, setCardDetails] = useState(null);
   let { serverUrl } = useContext(authDataContext);
 
   const handleAddListing = async () => {
@@ -71,6 +72,26 @@ function ListingContext({ children }) {
       setAdding(false);
       console.error("❌ 500 ERROR");
       console.error(error.response?.data || error.message);
+    }
+  };
+
+  const handleViewCard = async (id) => {
+    try {
+      if (!id) {
+        console.error("No ID provided for listing");
+        return;
+      }
+      console.log("Fetching listing with ID:", id); // Debug log
+      let result = await axios.get(
+        serverUrl + `/api/listing/findlistingbyid/${id}`,
+        { withCredentials: true }
+      );
+      setCardDetails(result.data);
+      console.log("Listing found:", result.data);
+      navigate("/viewcard", { state: { listing: result.data } });
+    } catch (error) {
+      console.error("Error fetching listing:", error);
+      console.error("Error response:", error.response?.data);
     }
   };
 
@@ -123,6 +144,9 @@ function ListingContext({ children }) {
     getListing,
     newlistData,
     setNewListData,
+    handleViewCard,
+    cardDetails,
+    setCardDetails,
   };
 
   return (

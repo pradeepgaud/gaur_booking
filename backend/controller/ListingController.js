@@ -95,3 +95,23 @@ export const getListing = async (req, res) => {
         res.status(500).json({ message: `getListing error: ${error.message}` });
     }
 };
+
+
+
+export const findListing = async (req, res) => {
+    try {
+        let { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ message: "Listing ID is required" });
+        }
+
+        let listing = await Listing.findById(id);
+        if (!listing) {
+            return res.status(404).json({ message: "Listing not found" });
+        }
+        return res.status(200).json(listing);
+    } catch (error) {
+        console.error("findListing error:", error);
+        return res.status(500).json({ message: `Server error: ${error.message}` });
+    }
+};
