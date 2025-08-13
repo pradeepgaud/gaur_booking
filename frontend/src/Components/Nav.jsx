@@ -25,7 +25,8 @@ function Nav() {
   const navigate = useNavigate();
   let { serverUrl } = useContext(authDataContext);
   let [cate, setCate] = useState();
-  let { listingData,setListingData,newlistData,setNewListData} = useContext(listingDataContext);
+  let { listingData, setListingData, newlistData, setNewListData } =
+    useContext(listingDataContext);
 
   const handleLogOut = async () => {
     try {
@@ -41,7 +42,10 @@ function Nav() {
 
   const handleCategory = (category) => {
     setCate(category);
-    setNewListData(listingData.filter((list) => list.category == category))
+    if (category == "Trending") {
+      setNewListData(listingData);
+    } else {
+      setNewListData(listingData.filter((list) => list.category == category))}
   };
 
   return (
@@ -153,7 +157,13 @@ function Nav() {
 
       {/* Scrollable Icon Bar */}
       <div className="w-full h-[85px] bg-white flex items-center md:justify-center justify-start overflow-x-auto cursor-pointer gap-[20px] px-[15px] md:px-0">
-        <div className="flex items-center justify-center flex-col hover:border-b-[1px] border-[#a6a5a5] text-[13px] min-w-[60px]">
+        <div
+          className="flex items-center justify-center flex-col hover:border-b-[1px] border-[#a6a5a5] text-[13px] min-w-[60px]"
+          onClick={() => {
+            handleCategory("Trending");
+            setCate("");
+          }}
+        >
           <MdWhatshot className="w-[30px] h-[30px] text-black" />
           <h3>Trending</h3>
         </div>
@@ -162,7 +172,8 @@ function Nav() {
           className={`flex items-center justify-center flex-col hover:border-b-[1px]
          border-[#a6a5a5] text-[13px] min-w-[60px] ${
            cate == "Villa" ? "border-b-[1px] border-[#a6a5a5]" : ""
-         }`} onClick={() =>handleCategory("Villa")}
+         }`}
+          onClick={() => handleCategory("Villa")}
         >
           <GiFamilyHouse className="w-[30px] h-[30px] text-black" />
           <h3>Villa</h3>
@@ -172,7 +183,8 @@ function Nav() {
           className={`flex items-center justify-center flex-col hover:border-b-[1px]
          border-[#a6a5a5] text-[13px] min-w-[60px] ${
            cate == "FarmHouse" ? "border-b-[1px] border-[#a6a5a5]" : ""
-         }`} onClick={() =>handleCategory("FarmHouse")}
+         }`}
+          onClick={() => handleCategory("FarmHouse")}
         >
           <BiSolidBuildingHouse className="w-[30px] h-[30px] text-black " />
           <h3>Farm House</h3>
@@ -182,7 +194,8 @@ function Nav() {
           className={`flex items-center justify-center flex-col hover:border-b-[1px]
          border-[#a6a5a5] text-[13px] min-w-[60px] ${
            cate == "PoolHouse" ? "border-b-[1px] border-[#a6a5a5]" : ""
-         }`} onClick={() =>handleCategory("PoolHouse")}
+         }`}
+          onClick={() => handleCategory("PoolHouse")}
         >
           <MdBedroomParent className="w-[30px] h-[30px] text-black" />
           <h3>Pool House</h3>
@@ -192,7 +205,8 @@ function Nav() {
           className={`flex items-center justify-center flex-col hover:border-b-[1px]
          border-[#a6a5a5] text-[13px] min-w-[60px] ${
            cate == "Rooms" ? "border-b-[1px] border-[#a6a5a5]" : ""
-         }`} onClick={() =>handleCategory("Rooms")}
+         }`}
+          onClick={() => handleCategory("Rooms")}
         >
           <MdBedroomParent className="w-[30px] h-[30px] text-black" />
           <h3>Rooms</h3>
@@ -202,7 +216,8 @@ function Nav() {
           className={`flex items-center justify-center flex-col hover:border-b-[1px]
          border-[#a6a5a5] text-[13px] min-w-[60px] ${
            cate == "Flat" ? "border-b-[1px] border-[#a6a5a5]" : ""
-         }`} onClick={() =>handleCategory("Flat")}
+         }`}
+          onClick={() => handleCategory("Flat")}
         >
           <MdOutlineHouseboat className="w-[30px] h-[30px] text-black" />
           <h3>Flat</h3>
@@ -212,7 +227,8 @@ function Nav() {
           className={`flex items-center justify-center flex-col hover:border-b-[1px]
          border-[#a6a5a5] text-[13px] min-w-[60px] ${
            cate == "PG" ? "border-b-[1px] border-[#a6a5a5]" : ""
-         }`} onClick={() =>handleCategory("PG")}
+         }`}
+          onClick={() => handleCategory("PG")}
         >
           <LuWarehouse className="w-[30px] h-[30px] text-black" />
           <h3>PG</h3>
@@ -222,7 +238,8 @@ function Nav() {
           className={`flex items-center justify-center flex-col hover:border-b-[1px]
          border-[#a6a5a5] text-[13px] min-w-[60px] ${
            cate == "Cabins" ? "border-b-[1px] border-[#a6a5a5]" : ""
-         }`} onClick={() =>handleCategory("Cabins")}
+         }`}
+          onClick={() => handleCategory("Cabins")}
         >
           <HiMiniBuildingOffice className="w-[30px] h-[30px] text-black" />
           <h3>Cabins</h3>
@@ -232,7 +249,8 @@ function Nav() {
           className={`flex items-center justify-center flex-col hover:border-b-[1px]
          border-[#a6a5a5] text-[13px] min-w-[60px] ${
            cate == "Shop" ? "border-b-[1px] border-[#a6a5a5]" : ""
-         }`} onClick={() =>handleCategory("Shop")}
+         }`}
+          onClick={() => handleCategory("Shop")}
         >
           <GiVikingLonghouse className="w-[30px] h-[30px] text-black" />
           <h3>Shop</h3>
