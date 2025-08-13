@@ -81,7 +81,7 @@ const listingSchema = new mongoose.Schema({
         required: true
     },
     rent: {
-        type: Number,
+        type: String,
         required: true
     },
     city: {

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import logo from "../assets/logo.jpg";
+import logo from "../assets/logo-02.jpg";
 import { FiSearch } from "react-icons/fi";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { CgProfile } from "react-icons/cg";
@@ -45,7 +45,8 @@ function Nav() {
     if (category == "Trending") {
       setNewListData(listingData);
     } else {
-      setNewListData(listingData.filter((list) => list.category == category))}
+      setNewListData(listingData.filter((list) => list.category == category));
+    }
   };
 
   return (
@@ -129,7 +130,13 @@ function Nav() {
                 >
                   List your Home
                 </li>
-                <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition">
+                <li
+                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition"
+                  onClick={() => {
+                    navigate("/mylisting");
+                    setShowPopUp(false);
+                  }}
+                >
                   My Listing
                 </li>
                 <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition">
