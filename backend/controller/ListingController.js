@@ -119,42 +119,42 @@ export const findListing = async (req, res) => {
 
 
 export const updateListing = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { title, description, rent, city, landMark, category } = req.body;
+    try {
+        const { id } = req.params;
+        const { title, description, rent, city, landMark, category } = req.body;
 
-    // Get uploaded files from Multer
-    const image1 = req.files?.image1?.[0] 
-      ? await uploadOnCloudinary(req.files.image1[0].path) 
-      : undefined;
-    
-    const image2 = req.files?.image2?.[0]
-      ? await uploadOnCloudinary(req.files.image2[0].path)
-      : undefined;
-    
-    const image3 = req.files?.image3?.[0]
-      ? await uploadOnCloudinary(req.files.image3[0].path)
-      : undefined;
+        // Get uploaded files from Multer
+        const image1 = req.files?.image1?.[0]
+            ? await uploadOnCloudinary(req.files.image1[0].path)
+            : undefined;
 
-    const updateData = {
-      title,
-      description,
-      rent,
-      city,
-      landMark,
-      category,
-      ...(image1 && { image1 }),
-      ...(image2 && { image2 }),
-      ...(image3 && { image3 })
-    };
+        const image2 = req.files?.image2?.[0]
+            ? await uploadOnCloudinary(req.files.image2[0].path)
+            : undefined;
 
-    const listing = await Listing.findByIdAndUpdate(id, updateData, { new: true });
+        const image3 = req.files?.image3?.[0]
+            ? await uploadOnCloudinary(req.files.image3[0].path)
+            : undefined;
 
-    return res.status(200).json(listing);
-  } catch (error) {
-    console.error("Update error:", error);
-    return res.status(500).json({ message: "Update failed", error: error.message });
-  }
+        const updateData = {
+            title,
+            description,
+            rent,
+            city,
+            landMark,
+            category,
+            ...(image1 && { image1 }),
+            ...(image2 && { image2 }),
+            ...(image3 && { image3 })
+        };
+
+        const listing = await Listing.findByIdAndUpdate(id, updateData, { new: true });
+
+        return res.status(200).json(listing);
+    } catch (error) {
+        console.error("Update error:", error);
+        return res.status(500).json({ message: "Update failed", error: error.message });
+    }
 };
 
 // export const updateListing = async (req, res) => {
@@ -166,11 +166,11 @@ export const updateListing = async (req, res) => {
 //     const image1 = req.files?.image1?.[0] 
 //       ? await uploadOnCloudinary(req.files.image1[0].path) 
 //       : undefined;
-    
+
 //     const image2 = req.files?.image2?.[0]
 //       ? await uploadOnCloudinary(req.files.image2[0].path)
 //       : undefined;
-    
+
 //     const image3 = req.files?.image3?.[0]
 //       ? await uploadOnCloudinary(req.files.image3[0].path)
 //       : undefined;
@@ -195,3 +195,20 @@ export const updateListing = async (req, res) => {
 //     return res.status(500).json({ message: "Update failed", error: error.message });
 //   }
 // };
+
+
+export const deleteListing = async (req, res) => {
+    try {
+        let { id } = req.params
+        let listing = await Listing.findByIdAndDelete(id)
+        let user = await User.findByIdAndUpdate(listing.host, {
+            $pull: { listing: listing._id }
+        }, { new: true })
+        if (!user) {
+            return res.status(404).json({ message: 'user not found' })
+        }
+        return res.status(201).json({ message: 'Listing deleted' })
+    } catch (error) {
+        return res.status(500).json({ message: `DeletedListing Error ${error}` })
+    }
+}

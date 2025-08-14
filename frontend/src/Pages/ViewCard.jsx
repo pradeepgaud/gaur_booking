@@ -26,6 +26,7 @@ function ViewCard() {
   // let [adding, setAdding] = useState(false);
   let { serverUrl } = useContext(authDataContext);
   let { updating, setUpdating } = useContext(listingDataContext);
+  let { deleteing, setDeleteing } = useContext(listingDataContext);
 
   const handleUpdateListing = async () => {
     setUpdating(true);
@@ -72,6 +73,27 @@ function ViewCard() {
       console.error("❌ 500 ERROR");
       setUpdating(false);
       console.error(error.response?.data || error.message);
+    }
+  };
+
+  const handleDeleteListing = async () => {
+    setDeleteing(true);
+    try {
+      const res = await axios.delete(
+        // Change to PUT
+        serverUrl + `/api/listing/delete/${cardDetails._id}`,
+
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      console.log(res.data);
+      navigate("/")
+      setDeleteing(false);
+    } catch (error) {
+      console.log(error);
+      setDeleteing(false);
     }
   };
 
@@ -312,14 +334,26 @@ function ViewCard() {
             </div>
 
             {/* Submit */}
-            <div className="w-full flex justify-center mt-6">
+            <div className="w-full flex flex-wrap justify-center gap-4 mt-6">
+              {/* Update Button */}
               <button
-                type="submit"
-                className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg text-lg font-medium shadow-lg transition-all"
+                type="button"
+                className="min-w-[150px] px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg text-lg font-medium shadow-lg transition-all duration-300 w-full sm:w-auto"
                 onClick={handleUpdateListing}
                 disabled={updating}
               >
-                {updating ? "Updating..." : "Updating Listing"}
+                {updating ? "Updating..." : "Update Listing"}
+              </button>
+
+              {/* Delete Button */}
+              <button
+                type="button"
+                className="min-w-[150px] px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg text-lg font-medium shadow-lg transition-all duration-300 w-full sm:w-auto"
+                de
+                onClick={handleDeleteListing}
+                disabled={deleteing}
+              >
+                {deleteing ? "Delete..." : "Delete Listing"}
               </button>
             </div>
           </form>
