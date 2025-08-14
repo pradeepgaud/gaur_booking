@@ -21,6 +21,7 @@ function ListingContext({ children }) {
   let [landMark, setLandMark] = useState("");
   let [category, setCategory] = useState("");
   let [adding, setAdding] = useState(false);
+  let [updating, setUpdating] = useState(false);
   let [listingData, setListingData] = useState([]);
   let [newlistData, setNewListData] = useState([]);
   let [cardDetails, setCardDetails] = useState(null);
@@ -31,9 +32,9 @@ function ListingContext({ children }) {
     try {
       let formData = new FormData();
       formData.append("title", title);
-      formData.append("image1", backEndImage1);
-      formData.append("image2", backEndImage2);
-      formData.append("image3", backEndImage3);
+      if(backEndImage1){formData.append("image1", backEndImage1)};
+      if(formData.append){("image2", backEndImage2)};
+      if(formData.append){("image3", backEndImage3)};
       formData.append("description", description);
       formData.append("rent", rent);
       formData.append("city", city);
@@ -109,7 +110,7 @@ function ListingContext({ children }) {
 
   useEffect(() => {
     getListing();
-  }, [adding]);
+  }, [adding, updating]);
 
   let value = {
     title,
@@ -147,6 +148,8 @@ function ListingContext({ children }) {
     handleViewCard,
     cardDetails,
     setCardDetails,
+    updating,
+    setUpdating,
   };
 
   return (

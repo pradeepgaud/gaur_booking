@@ -1,13 +1,94 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate, useLocation } from "react-router-dom";
 import { userDataContext } from "./../Context/UserContext";
+import { ImCross } from "react-icons/im";
+import axios from "axios";
+import { authDataContext } from "../Context/AuthContext";
+import { listingDataContext } from "../Context/ListingContext";
 
 function ViewCard() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  let { userData } = useContext(userDataContext);
+  const { userData } = useContext(userDataContext);
   const cardDetails = state?.listing; // ✅ Get data from navigation state
+
+  let [title, setTitle] = useState(cardDetails?.title || "");
+  let [description, setDescription] = useState(cardDetails?.description || "");
+  let [backEndImage1, setBackEndImage1] = useState(null);
+  let [backEndImage2, setBackEndImage2] = useState(null);
+  let [backEndImage3, setBackEndImage3] = useState(null);
+  let [rent, setRent] = useState(cardDetails?.rent || "");
+  let [city, setCity] = useState(cardDetails?.city || "");
+  let [landMark, setLandMark] = useState(cardDetails?.landMark || "");
+  // let [category, setCategory] = useState(cardDetails?.category || "");
+  let [updatePopUp, setUpdatePopUp] = useState(false);
+  // let [adding, setAdding] = useState(false);
+  let { serverUrl } = useContext(authDataContext);
+  let { updating, setUpdating } = useContext(listingDataContext);
+
+  const handleUpdateListing = async () => {
+    setUpdating(true);
+    try {
+      let formData = new FormData();
+      formData.append("title", title);
+      formData.append("image1", backEndImage1);
+      formData.append("image2", backEndImage2);
+      formData.append("image3", backEndImage3);
+      formData.append("description", description);
+      formData.append("rent", rent);
+      formData.append("city", city);
+      formData.append("landMark", landMark);
+      // formData.append("category", category);
+
+      const res = await axios.put(
+        // Change to PUT
+        serverUrl + `/api/listing/update/${cardDetails._id}`,
+        formData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      setUpdating(false);
+      if (res.status === 200) {
+        console.log("✅ 200 OK");
+      } else {
+        console.log(`⚠️ Unexpected status: ${res.status}`);
+      }
+
+      console.log("Response Data:", res.data);
+      navigate("/");
+      setTitle("");
+      setDescription("");
+      setBackEndImage1(null);
+      setBackEndImage2(null);
+      setBackEndImage3(null);
+      setRent("");
+      setCity("");
+      setLandMark("");
+      // setCategory("");
+    } catch (error) {
+      console.error("❌ 500 ERROR");
+      setUpdating(false);
+      console.error(error.response?.data || error.message);
+    }
+  };
+
+  const handleImage1 = (e) => {
+    let file = e.target.files[0];
+    setBackEndImage1(file);
+  };
+
+  const handleImage2 = (e) => {
+    let file = e.target.files[0];
+    setBackEndImage2(file);
+  };
+
+  const handleImage3 = (e) => {
+    let file = e.target.files[0];
+    setBackEndImage3(file);
+  };
 
   if (!cardDetails) {
     return (
@@ -16,16 +97,6 @@ function ViewCard() {
       </div>
     );
   }
-
-  // const handleEdit = () => {
-  //   // Add your edit functionality here
-  //   console.log("Edit clicked");
-  // };
-
-  // const handleBooking = () => {
-  //   // Add your booking functionality here
-  //   console.log("Booking clicked");
-  // };
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-b from-white to-gray-100 flex flex-col items-center py-10 px-4 relative">
@@ -73,17 +144,12 @@ function ViewCard() {
 
       {/* Property Details */}
       <div className="w-[95%] md:w-[80%] space-y-4 mb-8">
-        {/* Title */}
         <div className="text-[18px] md:text-[25px] font-semibold text-gray-900">
           {`${cardDetails.title?.toUpperCase()} ${cardDetails.category?.toUpperCase()}, ${cardDetails.landMark?.toUpperCase()}`}
         </div>
-
-        {/* Description */}
         <div className="text-[16px] md:text-[20px] text-gray-700 leading-relaxed">
           {cardDetails.description}
         </div>
-
-        {/* Price */}
         <div className="text-[20px] md:text-[28px] font-bold text-red-600">
           ₹{cardDetails.rent}/day
         </div>
@@ -91,19 +157,174 @@ function ViewCard() {
 
       {/* Action Buttons */}
       <div className="w-[95%] md:w-[80%] flex flex-col sm:flex-row gap-4 justify-center items-center">
-        {cardDetails.host == userData._id && (
+        {cardDetails.host === userData._id && (
           <button
-            // onClick={handleEdit}
             className="w-full sm:w-auto px-8 py-3 bg-gray-600 hover:bg-gray-700 text-white text-[16px] md:text-[18px] font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+            onClick={() => setUpdatePopUp((prev) => !prev)}
           >
-            Edit Property
+            Edit listing
           </button>
         )}
-
-      { cardDetails.host !== userData._id &&  <button className="w-full sm:w-auto px-8 py-3 bg-red-600 hover:bg-red-700 text-white text-[16px] md:text-[18px] font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
-          Book Now
-        </button>}
+        {cardDetails.host !== userData._id && (
+          <button className="w-full sm:w-auto px-8 py-3 bg-red-600 hover:bg-red-700 text-white text-[16px] md:text-[18px] font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+            Reserve
+          </button>
+        )}
       </div>
+
+      {/* Update Listing Modal */}
+      {updatePopUp && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-[100] p-4">
+          <ImCross
+            className="w-10 h-10 p-2 cursor-pointer absolute top-5 right-5 bg-red-500 hover:bg-red-600 rounded-full shadow-lg text-white transition-all"
+            onClick={() => setUpdatePopUp(false)}
+          />
+          <form
+            className="bg-[#1f1f1f] text-white w-full max-w-2xl rounded-2xl shadow-xl p-6 md:p-8 overflow-y-auto max-h-[90vh] border border-gray-700"
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <h2 className="text-2xl md:text-3xl font-semibold text-center mb-6 text-white">
+              Update Your Details
+            </h2>
+            {/* Title */}
+            <div className="w-full flex flex-col gap-2 mb-4">
+              <label htmlFor="title" className="text-lg font-medium">
+                Title
+              </label>
+              <input
+                type="text"
+                id="title"
+                className="w-full h-12 border border-gray-600 rounded-lg px-4 bg-transparent text-white focus:outline-none focus:border-red-500"
+                required
+                placeholder="_bhk house or best title"
+                onChange={(e) => setTitle(e.target.value)}
+                value={title}
+              />
+            </div>
+
+            {/* Description */}
+            <div className="w-full flex flex-col gap-2 mb-4">
+              <label htmlFor="des" className="text-lg font-medium">
+                Description
+              </label>
+              <textarea
+                id="des"
+                className="w-full h-24 border border-gray-600 rounded-lg px-4 py-2 bg-transparent text-white resize-none focus:outline-none focus:border-red-500"
+                required
+                placeholder="Enter detailed description"
+                onChange={(e) => setDescription(e.target.value)}
+                value={description}
+              ></textarea>
+            </div>
+
+            {/* Images */}
+            <div className="w-full flex flex-col gap-2">
+              <label htmlFor="img1" className="text-lg md:text-xl font-medium">
+                Image1
+              </label>
+              <div className="flex items-center w-full h-[40px] border-2 border-[#555656] rounded-lg">
+                <input
+                  type="file"
+                  id="img1"
+                  className="w-[100%] text-[15px] px-[10px] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-500 file:text-white hover:file:bg-red-600 cursor-pointer"
+                  onChange={handleImage1}
+                />
+              </div>
+            </div>
+
+            <div className="w-full flex flex-col gap-2">
+              <label htmlFor="img2" className="text-lg md:text-xl font-medium">
+                Image2
+              </label>
+              <div className="flex items-center w-full h-[40px] border-2 border-[#555656] rounded-lg">
+                <input
+                  type="file"
+                  id="img2"
+                  className="w-[100%] text-[15px] px-[10px] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-500 file:text-white hover:file:bg-red-600 cursor-pointer"
+                  onChange={handleImage2}
+                />
+              </div>
+            </div>
+
+            <div className="w-full flex flex-col gap-2">
+              <label htmlFor="img3" className="text-lg md:text-xl font-medium">
+                Image3
+              </label>
+              <div className="flex items-center w-full h-[40px] border-2 border-[#555656] rounded-lg">
+                <input
+                  type="file"
+                  id="img3"
+                  className="w-[100%] text-[15px] px-[10px] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-500 file:text-white hover:file:bg-red-600 cursor-pointer"
+                  // required
+                  onChange={handleImage3}
+                />
+              </div>
+            </div>
+
+            {/* Rent */}
+            <div className="w-full flex flex-col gap-2 mb-4">
+              <label htmlFor="rent" className="text-lg font-medium">
+                Rent
+              </label>
+              <input
+                type="text"
+                id="rent"
+                className="w-full h-12 border border-gray-600 rounded-lg px-4 bg-transparent text-white focus:outline-none focus:border-red-500"
+                required
+                placeholder="Rs------ per day"
+                onChange={(e) => setRent(e.target.value)}
+                value={rent}
+              />
+            </div>
+
+            {/* City */}
+            <div className="w-full flex flex-col gap-2 mb-4">
+              <label htmlFor="city" className="text-lg font-medium">
+                City
+              </label>
+              <input
+                type="text"
+                id="city"
+                className="w-full h-12 border border-gray-600 rounded-lg px-4 bg-transparent text-white focus:outline-none focus:border-red-500"
+                required
+                placeholder="City, Country"
+                onChange={(e) => setCity(e.target.value)}
+                value={city}
+              />
+            </div>
+
+            {/* Landmark */}
+            <div className="w-full flex flex-col gap-2 mb-4">
+              <label htmlFor="landmark" className="text-lg font-medium">
+                Landmark
+              </label>
+              <input
+                type="text"
+                id="landmark"
+                className="w-full h-12 border border-gray-600 rounded-lg px-4 bg-transparent text-white focus:outline-none focus:border-red-500"
+                required
+                placeholder="Nearby landmark"
+                onChange={(e) => setLandMark(e.target.value)}
+                value={landMark}
+              />
+            </div>
+
+            {/* Submit */}
+            <div className="w-full flex justify-center mt-6">
+              <button
+                type="submit"
+                className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg text-lg font-medium shadow-lg transition-all"
+                onClick={handleUpdateListing}
+                disabled={updating}
+              >
+                {updating ? "Updating..." : "Updating Listing"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
