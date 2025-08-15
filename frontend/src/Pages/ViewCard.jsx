@@ -6,6 +6,7 @@ import { ImCross } from "react-icons/im";
 import axios from "axios";
 import { authDataContext } from "../Context/AuthContext";
 import { listingDataContext } from "../Context/ListingContext";
+import { FaStar } from "react-icons/fa";
 
 function ViewCard() {
   const navigate = useNavigate();
@@ -435,6 +436,33 @@ function ViewCard() {
               </button>
             </div>
           </form>
+
+          <div className="max-w-[450px] w-[90%] bg-white p-6 rounded-2xl shadow-lg flex flex-col gap-6 border border-gray-200">
+            <div className="w-[95%] h-[30%] border-[1px] border-[#dedddd] rounded-lg flex justify-start items-center gap-[8px] p-[20px] overflow-hidden">
+              <div className="w-[70px] h-[90px] flex items-center justify-center flex-shrink-0 rounded-lg md:w-[100px] md:h-[100px]">
+                <img
+                  className="w-[100%] h-[100%] rounded-lg"
+                  src={cardDetails.image1}
+                  alt=""
+                />
+              </div>
+
+              <div className="w-[80%] h-[100px] gap-[5px]">
+                <h1 className="w-[90%] truncate">{`IN ${cardDetails.landMark.toUpperCase()},${cardDetails.city.toUpperCase()}`}</h1>
+                <h1>{cardDetails.title.toUpperCase()}</h1>
+                <h1>{cardDetails.category.toUpperCase()}</h1>
+                <h1 className="flex items-center justify-start gap-[5px]">
+                  {" "}
+                  <FaStar className="text-[#FFD700]" />
+                  {cardDetails.ratings}
+                </h1>
+              </div>
+              <div className="w-[95%] h-[60%] border-[1px]  border-[#dedddd] rounded-lg flex justify-start items-start p-[20px]  gap-[15px] flex-col"> 
+
+                
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
