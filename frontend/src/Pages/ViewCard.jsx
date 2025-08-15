@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate, useLocation } from "react-router-dom";
 import { userDataContext } from "./../Context/UserContext";
@@ -23,10 +23,12 @@ function ViewCard() {
   let [landMark, setLandMark] = useState(cardDetails?.landMark || "");
   // let [category, setCategory] = useState(cardDetails?.category || "");
   let [updatePopUp, setUpdatePopUp] = useState(false);
+  let [bookingPopUp, setBookingPopUp] = useState(false);
   // let [adding, setAdding] = useState(false);
   let { serverUrl } = useContext(authDataContext);
   let { updating, setUpdating } = useContext(listingDataContext);
   let { deleteing, setDeleteing } = useContext(listingDataContext);
+  let [minDate, setMinDate] = useState("");
 
   const handleUpdateListing = async () => {
     setUpdating(true);
@@ -89,7 +91,7 @@ function ViewCard() {
         }
       );
       console.log(res.data);
-      navigate("/")
+      navigate("/");
       setDeleteing(false);
     } catch (error) {
       console.log(error);
@@ -111,6 +113,11 @@ function ViewCard() {
     let file = e.target.files[0];
     setBackEndImage3(file);
   };
+
+  useEffect(() => {
+    let today = new Date().toISOString().split("T")[0];
+    setMinDate(today);
+  }, []);
 
   if (!cardDetails) {
     return (
@@ -188,7 +195,10 @@ function ViewCard() {
           </button>
         )}
         {cardDetails.host !== userData._id && (
-          <button className="w-full sm:w-auto px-8 py-3 bg-red-600 hover:bg-red-700 text-white text-[16px] md:text-[18px] font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+          <button
+            className="w-full sm:w-auto px-8 py-3 bg-red-600 hover:bg-red-700 text-white text-[16px] md:text-[18px] font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+            onClick={() => setBookingPopUp((prev) => !prev)}
+          >
             Reserve
           </button>
         )}
@@ -349,11 +359,79 @@ function ViewCard() {
               <button
                 type="button"
                 className="min-w-[150px] px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg text-lg font-medium shadow-lg transition-all duration-300 w-full sm:w-auto"
-                de
+                // de
                 onClick={handleDeleteListing}
                 disabled={deleteing}
               >
                 {deleteing ? "Delete..." : "Delete Listing"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Booking  */}
+
+      {bookingPopUp && (
+        <div className="w-[100%] min-h-[100%] flex items-center justify-center flex-col gap-[30px] bg-[white] absolute top-[0px] z-[100] p-[20px] backdrop-blur-sm md:flex-row md:gap-[100px]">
+          <ImCross
+            className="w-10 h-10 p-2 cursor-pointer absolute top-5 right-5 bg-red-500 hover:bg-red-600 rounded-full shadow-lg text-white transition-all"
+            onClick={() => setBookingPopUp(false)}
+          />
+          <form className="max-w-[450px] w-[90%] bg-white p-6 rounded-2xl shadow-lg flex flex-col gap-6 border border-gray-200">
+            {/* Title */}
+            <h1 className="text-2xl font-semibold text-center border-b pb-3 text-gray-800">
+              Confirm & Book
+            </h1>
+
+            {/* Trip Info */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">
+                Your trip
+              </h3>
+
+              {/* CheckIn */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+                <label
+                  htmlFor="checkin"
+                  className="text-base font-medium text-gray-700 min-w-[90px]"
+                >
+                  Check-In
+                </label>
+                <input
+                  type="date"
+                  min={minDate}
+                  id="checkin"
+                  className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-[200px] focus:outline-none focus:ring-2 focus:ring-red-500"
+                  required
+                />
+              </div>
+
+              {/* CheckOut */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <label
+                  htmlFor="checkout"
+                  className="text-base font-medium text-gray-700 min-w-[90px]"
+                >
+                  Check-Out
+                </label>
+                <input
+                  type="date"
+                  id="checkout"
+                  min={minDate}
+                  className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-[200px] focus:outline-none focus:ring-2 focus:ring-red-500"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Book Now Button */}
+            <div className="flex justify-center mt-4">
+              <button
+                type="button"
+                className="w-full sm:w-auto px-10 sm:px-16 py-3 bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold text-lg rounded-full shadow-md hover:shadow-lg transition-transform duration-300 hover:scale-105 active:scale-95"
+              >
+                Book Now
               </button>
             </div>
           </form>

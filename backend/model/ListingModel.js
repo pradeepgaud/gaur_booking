@@ -66,11 +66,12 @@ const listingSchema = new mongoose.Schema({
     host: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+         required: true
     },
     guest: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true
+       
     },
     image1: {
         type: String,
