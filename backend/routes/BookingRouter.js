@@ -6,7 +6,7 @@ import { createBooking } from "../controller/BookingController.js"
 
 
 let bookingRouter = express.Router()
-bookingRouter.post("/create",isAuth,createBooking)
+bookingRouter.post("/create/:id",isAuth,createBooking)
 
 
 export default bookingRouter
