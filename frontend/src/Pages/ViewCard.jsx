@@ -40,7 +40,8 @@ function ViewCard() {
     setTotal,
     night,
     setNight,
-    handleBooking
+    handleBooking,
+    booking, setBooking
   } = useContext(BookingDataContext);
 
   useEffect(() => {
@@ -465,9 +466,9 @@ function ViewCard() {
               <button
                 type="button"
                 className="w-full sm:w-auto px-10 sm:px-16 py-3 bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold text-lg rounded-full shadow-md hover:shadow-lg transition-transform duration-300 hover:scale-105 active:scale-95"
-                onClick={() =>handleBooking(cardDetails._id)}
+                onClick={() =>handleBooking(cardDetails._id)} disabled={booking}
               >
-                Book Now
+               {booking?"Booking...":"Book Now"}
               </button>
             </div>
           </form>

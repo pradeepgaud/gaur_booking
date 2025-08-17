@@ -1,12 +1,13 @@
 import express from "express"
 import isAuth from "../middleware/isAuth.js"
-import { createBooking } from "../controller/BookingController.js"
+import { cancelBooking, createBooking } from "../controller/BookingController.js"
 
 
 
 
 let bookingRouter = express.Router()
-bookingRouter.post("/create/:id",isAuth,createBooking)
+bookingRouter.post("/create/:id", isAuth, createBooking)
+bookingRouter.delete("/cancel/:id", isAuth, cancelBooking)
 
 
 export default bookingRouter

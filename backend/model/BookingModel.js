@@ -4,23 +4,22 @@ const bookingSchema = new mongoose.Schema({
     host: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        require: true
+        required: true // typo fix: require -> required
     },
     guest: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        require: true
+        required: true // typo fix: require -> required
     },
     listing: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Listing",
-        require: true
+        required: true // typo fix: require -> required
     },
     status: {
         type: String,
-        enum: ["booked", "cancle"],
+        enum: ["booked", "cancelled"], // typo fix: cancle -> cancelled
         default: "booked",
-        
     },
     checkIn: {
         type: Date,
@@ -30,15 +29,12 @@ const bookingSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    totalRent:{
-        type:Number,
-        required:true
+    totalRent: {
+        type: Number,
+        required: true
     },
-    
+}, { timestamps: true })
 
-},{timestamps:true})
-
-
-const Booking = mongoose.model("Booking",bookingSchema)
+const Booking = mongoose.model("Booking", bookingSchema)
 
 export default Booking

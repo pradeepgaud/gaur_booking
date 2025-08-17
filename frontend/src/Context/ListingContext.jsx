@@ -28,60 +28,66 @@ function ListingContext({ children }) {
   let [cardDetails, setCardDetails] = useState(null);
   let { serverUrl } = useContext(authDataContext);
 
-  const handleAddListing = async () => {
-    setAdding(true);
-    try {
-      let formData = new FormData();
-      formData.append("title", title);
-      if (backEndImage1) {
-        formData.append("image1", backEndImage1);
-      }
-      if (formData.append) {
-        "image2", backEndImage2;
-      }
-      if (formData.append) {
-        "image3", backEndImage3;
-      }
-      formData.append("description", description);
-      formData.append("rent", rent);
-      formData.append("city", city);
-      formData.append("landMark", landMark);
-      formData.append("category", category);
-
-      const res = await axios.post(serverUrl + "/api/listing/add", formData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      // Status check
-      if (res.status === 200) {
-        console.log("✅ 200 OK");
-      } else {
-        console.log(`⚠️ Unexpected status: ${res.status}`);
-      }
-      setAdding(false);
-      console.log("Response Data:", res.data);
-      navigate("/");
-      setTitle("");
-      setDescription("");
-      setFrontEndImage1(null);
-      setFrontEndImage2(null);
-      setFrontEndImage3(null);
-      setBackEndImage1(null);
-      setBackEndImage2(null);
-      setBackEndImage3(null);
-      setRent("");
-      setCity("");
-      setLandMark("");
-      setCategory("");
-    } catch (error) {
-      setAdding(false);
-      console.error("❌ 500 ERROR");
-      console.error(error.response?.data || error.message);
+const handleAddListing = async () => {
+  setAdding(true);
+  try {
+    let formData = new FormData();
+    formData.append("title", title);
+    
+    // ✅ FIXED: Proper FormData append syntax
+    if (backEndImage1) {
+      formData.append("image1", backEndImage1);
     }
-  };
+    if (backEndImage2) {  // ✅ FIXED: Added proper condition
+      formData.append("image2", backEndImage2);
+    }
+    if (backEndImage3) {  // ✅ FIXED: Added proper condition
+      formData.append("image3", backEndImage3);
+    }
+    
+    formData.append("description", description);
+    formData.append("rent", rent);
+    formData.append("city", city);
+    formData.append("landMark", landMark);
+    formData.append("category", category);
+
+    const res = await axios.post(serverUrl + "/api/listing/add", formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    // Status check
+    if (res.status === 200) {
+      console.log("✅ 200 OK");
+    } else {
+      console.log(`⚠️ Unexpected status: ${res.status}`);
+    }
+    
+    setAdding(false);
+    console.log("Response Data:", res.data);
+    navigate("/");
+    
+    // Reset form
+    setTitle("");
+    setDescription("");
+    setFrontEndImage1(null);
+    setFrontEndImage2(null);
+    setFrontEndImage3(null);
+    setBackEndImage1(null);
+    setBackEndImage2(null);
+    setBackEndImage3(null);
+    setRent("");
+    setCity("");
+    setLandMark("");
+    setCategory("");
+  } catch (error) {
+    setAdding(false);
+    console.error("❌ 500 ERROR");
+    console.error(error.response?.data || error.message);
+  }
+};
 
   const handleViewCard = async (id) => {
     try {

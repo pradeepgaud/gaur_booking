@@ -50,7 +50,7 @@ function Nav() {
   };
 
   return (
-    <div className="fixed top-0 bg-white">
+    <div className="fixed top-0 bg-white z-[20]">
       {/* Top Navbar */}
       <div className="w-[100vw] min-h-[80px] border-b-[1px] border-[#dcdcdc] px-[40px] flex items-center justify-between md:px-[40px] ">
         <div>
@@ -139,8 +139,14 @@ function Nav() {
                 >
                   My Listing
                 </li>
-                <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition">
-                  Check Booking
+                <li
+                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition"
+                  onClick={() => {
+                    navigate("/mybooking");
+                    setShowPopUp(false);
+                  }}
+                >
+                  My Booking
                 </li>
               </ul>
             </div>

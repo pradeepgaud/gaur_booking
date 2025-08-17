@@ -1,56 +1,107 @@
-import Listing from './../model/ListingModel.js';
-import Booking from './../model/BookingModel.js';
-import User from './../model/UserModel.js';
+import User from '../model/UserModel.js';
+import Listing from '../model/ListingModel.js';
+import Booking from '../model/BookingModel.js';
 
-
-
+// Create a new booking
 export const createBooking = async (req, res) => {
     try {
-        let { id } = req.params;
-        let { checkIn, checkOut, totalRent } = req.body;
+        const { id: listingId } = req.params; // URL से id लें
+        const { checkIn, checkOut, totalRent } = req.body; // body से booking details लें
+        const userId = req.userId;
 
-        let listing = await Listing.findById(id);
+        console.log("Creating booking for listing:", listingId);
+        console.log("User ID:", userId);
+        console.log("Booking details:", { checkIn, checkOut, totalRent });
+
+        // Check if listing exists
+        const listing = await Listing.findById(listingId);
         if (!listing) {
-            return res.status(404).json({ message: "Listing is not found" });
+            return res.status(404).json({ message: "Listing not found" });
         }
 
-        // ✅ Fix: Correct Date object usage
-        if (new Date(checkIn) >= new Date(checkOut)) {
-            return res.status(400).json({ message: "Invalid checkIn/checkOut date" });
-        }
-
+        // Check if listing is already booked
         if (listing.isBooked) {
-            return res.status(400).json({ message: "Listing is already Booked" });
+            return res.status(400).json({ message: "Listing is already booked" });
         }
 
-        // ✅ Create booking
-        let booking = await Booking.create({
-            checkIn,
-            checkOut,
-            totalRent,
+        // Check if user already booked this listing
+        const user = await User.findById(userId);
+        if (user.booking.includes(listingId)) {
+            return res.status(400).json({ message: "You have already booked this listing" });
+        }
+
+        // Create new booking record
+        const newBooking = new Booking({
             host: listing.host,
-            guest: req.userId,
-            listing: listing._id
+            guest: userId,
+            listing: listingId,
+            checkIn: new Date(checkIn),
+            checkOut: new Date(checkOut),
+            totalRent,
+            status: "booked"
         });
 
-        // ✅ Fix: Push booking ID instead of listing
-        let user = await User.findByIdAndUpdate(
-            req.userId,
-            { $push: { booking: booking._id } },
+        const savedBooking = await newBooking.save();
+
+        // Update user's booking array
+        await User.findByIdAndUpdate(
+            userId,
+            { $push: { booking: listingId } },
             { new: true }
         );
 
-        if (!user) {
-            return res.status(404).json({ message: "User is not found" });
+        // Update listing's guest field and mark as booked
+        await Listing.findByIdAndUpdate(listingId, {
+            guest: userId,
+            isBooked: true
+        });
+
+        return res.status(200).json({ 
+            message: "Booking successful",
+            booking: savedBooking
+        });
+
+    } catch (error) {
+        console.error("CreateBooking error:", error);
+        return res.status(500).json({ message: `Booking error: ${error.message}` });
+    }
+};
+
+// Cancel a booking
+export const cancelBooking = async (req, res) => {
+    try {
+        const { id: listingId } = req.params;
+        const userId = req.userId;
+
+        console.log("Canceling booking for listing:", listingId);
+
+        // Find and update the listing
+        const listing = await Listing.findById(listingId);
+        if (!listing) {
+            return res.status(404).json({ message: "Listing not found" });
         }
 
-        listing.guest = req.userId;
-        listing.isBooked = true;
-        await listing.save();
+        // Update listing
+        await Listing.findByIdAndUpdate(listingId, {
+            guest: null,
+            isBooked: false
+        });
 
-        return res.status(201).json(booking);
+        // Remove from user's booking array
+        await User.findByIdAndUpdate(userId, {
+            $pull: { booking: listingId }
+        }, { new: true });
+
+        // Update booking status in Booking collection
+        await Booking.findOneAndUpdate(
+            { listing: listingId, guest: userId, status: "booked" },
+            { status: "cancelled" }
+        );
+
+        return res.status(200).json({ message: "Booking cancelled successfully" });
+
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: `Booking error: ${error.message}` });
+        console.error("Cancel booking error:", error);
+        return res.status(500).json({ message: "Booking cancel error" });
     }
 };

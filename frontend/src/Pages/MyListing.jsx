@@ -33,6 +33,8 @@ function Mylisting() {
             image3={list.image3}
             rent={list.rent}
             id={list.id}
+            isBooked={list.isBooked}
+            host={list.host}
           />
         ))}
       </div>

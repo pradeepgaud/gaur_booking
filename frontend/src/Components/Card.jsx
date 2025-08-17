@@ -3,6 +3,10 @@ import { userDataContext } from "./../Context/UserContext";
 import { listingDataContext } from "../Context/ListingContext";
 import { useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
+import { GiConfirmed } from "react-icons/gi";
+import { FcCancel } from "react-icons/fc";
+import { useState } from "react";
+import { BookingDataContext } from "../Context/BookingContext";
 
 function Card({
   title,
@@ -13,11 +17,15 @@ function Card({
   rent,
   city,
   id,
-  ratings
+  ratings,
+  isBooked,
+  host,
 }) {
   let navigate = useNavigate();
   let { userData } = useContext(userDataContext);
   let { handleViewCard } = useContext(listingDataContext);
+  let [popup, setPopUp] = useState(false);
+  let {cancelBooking} = useContext(BookingDataContext)
 
   const handleClick = () => {
     console.log("Card clicked, ID:", id); // Add this for debugging
@@ -34,9 +42,45 @@ function Card({
 
   return (
     <div
-      className="w-[330px] max-w-[85%] h-[460px] flex items-start justify-start flex-col rounded-lg cursor-pointer bg-slate-100"
-      onClick={handleClick}
+      className="w-[330px] max-w-[85%] h-[460px] flex items-start justify-start flex-col rounded-lg cursor-pointer bg-slate-100 relative z-[10]"
+      onClick={() => (!isBooked ? handleClick() : null)}
     >
+      {isBooked && (
+        <div className="text-[green] bg-white rounded-lg absolute flex items-center justify-center right-1 top-1 gap-[5px] p-[5px]">
+          <GiConfirmed className="w-[20px] h-[20px]  text-[green]" />
+          Booked
+        </div>
+      )}
+      {isBooked && host == userData?._id && (
+        <div
+          className="text-[red] bg-white rounded-lg absolute flex items-center justify-center right-1 top-[50px] gap-[5px] p-[5px]"
+          onClick={() => setPopUp(true)}
+        >
+          <FcCancel className="w-[20px] h-[20px]" />
+          Cancel Booking
+        </div>
+      )}
+
+      {popup && (
+        <div className="w-[300px] h-[100px] bg-[#ffffffdf] absolute top-[110px] left-[13px] rounded-lg">
+          <div className="w-[100%] h-[50%] text-[#2e2d2d] flex items-start justify-center rounded-lg overflow-auto text-[20px] p-[10px]">
+            Booking Cancel!
+          </div>
+          <div className="w-[100%] h-[50%] text-[18px] font-semibold flex items-start justify-center gap-[10px] text-[#986b6b]">
+            Are You Sure?{" "}
+            <button className="px-[20px] bg-[red] text-white rounded-lg hover:bg-slate-600" onClick={() =>{cancelBooking(id);setPopUp(false)}}>
+              Yes
+            </button>
+            <button
+              className="px-[10px] bg-[red] text-white rounded-lg hover:bg-slate-600"
+              onClick={() => setPopUp(false)}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="w-[100%] h-[67%] bg-[#2e2d2d] rounded-lg overflow-auto flex">
         <img src={image1} alt="" className="w-[100%] flex-shring-0" />
         <img src={image2} alt="" className="w-[100%] flex-shring-0" />
@@ -49,7 +93,8 @@ function Card({
             In {landMark.toUpperCase()},{city.toUpperCase()}
           </span>
           <span className="flex items-center justify-center gap-[5px]">
-            <FaStar className="text-[#FFD700]" />{ratings}
+            <FaStar className="text-[#FFD700]" />
+            {ratings}
           </span>
         </div>
         <span className="w-[80%] text-[15px] text-ellipsis overflow-hidden  text-nowrap">

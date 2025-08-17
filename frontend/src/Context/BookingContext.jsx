@@ -3,6 +3,7 @@ import React, { Children, createContext, useContext, useState } from "react";
 import { authDataContext } from "./AuthContext";
 import { userDataContext } from "./UserContext";
 import { listingDataContext } from "./ListingContext";
+import { useNavigate } from "react-router-dom";
 export const BookingDataContext = createContext();
 
 function BookingContext({ children }) {
@@ -13,9 +14,16 @@ function BookingContext({ children }) {
   let { serverUrl } = useContext(authDataContext);
   let { getCurrentUser } = useContext(userDataContext);
   let { getListing } = useContext(listingDataContext);
-  let [bookingData, setBookingData] = useState("");
+  let [bookingData, setBookingData] = useState([]);
+  let [booking, setBooking] = useState(false);
+  let navigate = useNavigate();
 
   const handleBooking = async (id) => {
+    console.log("Booking ID:", id); // यह check करें कि सही id आ रही है
+    console.log("Check-in:", checkIn);
+    console.log("Check-out:", checkOut);
+    console.log("Total:", total);
+    setBooking(true);
     try {
       let result = await axios.post(
         serverUrl + `/api/booking/create/${id}`,
@@ -30,9 +38,25 @@ function BookingContext({ children }) {
       await getListing();
       setBookingData(result.data);
       console.log(result.data);
+      setBooking(false);
+      navigate("/");
     } catch (error) {
       console.log(error);
       setBookingData(null);
+      setBooking(false);
+    }
+  };
+
+  const cancelBooking = async (id) => {
+    try {
+      let result = await axios.delete(serverUrl + `/api/booking/cancel/${id}`, {
+        withCredentials: true,
+      });
+      await getCurrentUser();
+      await getListing();
+      console.log(result.data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -48,6 +72,9 @@ function BookingContext({ children }) {
     bookingData,
     setBookingData,
     handleBooking,
+    cancelBooking,
+    booking,
+    setBooking,
   };
   return (
     <div>
