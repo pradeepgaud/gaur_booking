@@ -10,59 +10,50 @@ import { userDataContext } from "./Context/UserContext.jsx";
 import Mylisting from "./Pages/Mylisting.jsx";
 import ViewCard from "./Pages/ViewCard.jsx";
 import MyBooking from "./Pages/MyBooking.jsx";
-
+import Booked from "./Pages/Booked.jsx";
+  import { ToastContainer, toast } from 'react-toastify';
+  
 function App() {
   let { userData } = useContext(userDataContext);
   return (
     <>
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route
           path="/listingpage1"
-          element={
-            userData != null ? <ListingPage1 /> : <Navigate to={"/"} />
-          }
+          element={userData != null ? <ListingPage1 /> : <Navigate to={"/"} />}
         />
         <Route
           path="/listingpage2"
-          element={
-            userData != null ? <ListingPage2 /> : <Navigate to={"/"} />
-          }
+          element={userData != null ? <ListingPage2 /> : <Navigate to={"/"} />}
         />
         <Route
           path="/listingpage3"
-          element={
-            userData != null ? <ListingPage3 /> : <Navigate to={"/"} />
-          }
+          element={userData != null ? <ListingPage3 /> : <Navigate to={"/"} />}
         />
 
         <Route
           path="/mylisting"
-          element={
-            userData != null ? <Mylisting /> : <Navigate to={"/"} />
-          }
+          element={userData != null ? <Mylisting /> : <Navigate to={"/"} />}
         />
 
-         <Route
+        <Route
           path="/viewcard"
-          element={
-            userData != null ? <ViewCard /> : <Navigate to={"/"} />
-          }
+          element={userData != null ? <ViewCard /> : <Navigate to={"/"} />}
         />
 
-
-           <Route
+        <Route
           path="/mybooking"
-          element={
-            userData != null ? <MyBooking /> : <Navigate to={"/"} />
-          }
+          element={userData != null ? <MyBooking /> : <Navigate to={"/"} />}
         />
 
-
-
-
+        <Route
+          path="/booked"
+          element={userData != null ? <Booked /> : <Navigate to={"/"} />}
+        />
       </Routes>
     </>
   );

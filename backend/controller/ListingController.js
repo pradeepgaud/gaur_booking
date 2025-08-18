@@ -9,29 +9,29 @@ export const addListing = async (req, res) => {
 
         // Better validation for required files
         if (!req.files || !req.files.image1 || !req.files.image2 || !req.files.image3) {
-            return res.status(400).json({ 
-                message: "All three images (image1, image2, image3) are required" 
+            return res.status(400).json({
+                message: "All three images (image1, image2, image3) are required"
             });
         }
 
         // Additional validation for file arrays
         if (!req.files.image1[0] || !req.files.image2[0] || !req.files.image3[0]) {
-            return res.status(400).json({ 
-                message: "Invalid image files provided" 
+            return res.status(400).json({
+                message: "Invalid image files provided"
             });
         }
 
         // Upload images with error handling
         let image1, image2, image3;
-        
+
         try {
             image1 = await uploadOnCloudinary(req.files.image1[0].path);
             image2 = await uploadOnCloudinary(req.files.image2[0].path);
             image3 = await uploadOnCloudinary(req.files.image3[0].path);
         } catch (uploadError) {
-            return res.status(500).json({ 
-                message: "Image upload failed", 
-                error: uploadError.message 
+            return res.status(500).json({
+                message: "Image upload failed",
+                error: uploadError.message
             });
         }
 
@@ -63,7 +63,7 @@ export const addListing = async (req, res) => {
         return res.status(200).json(listing);
     } catch (error) {
         console.error("AddListing Error:", error);
-        return res.status(500).json({ 
+        return res.status(500).json({
             message: `AddListing error: ${error.message}`,
             stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
@@ -143,25 +143,50 @@ export const updateListing = async (req, res) => {
 export const deleteListing = async (req, res) => {
     try {
         let { id } = req.params;
-        
+
         let listing = await Listing.findByIdAndDelete(id);
         if (!listing) {
             return res.status(404).json({ message: 'Listing not found' });
         }
 
         let user = await User.findByIdAndUpdate(
-            listing.host, 
-            { $pull: { listing: listing._id } }, 
+            listing.host,
+            { $pull: { listing: listing._id } },
             { new: true }
         );
-        
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        
+
         return res.status(200).json({ message: 'Listing deleted successfully' });
     } catch (error) {
         console.error("Delete error:", error);
         return res.status(500).json({ message: `DeleteListing Error: ${error.message}` });
     }
 };
+
+
+
+
+export const search = async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (!query) {
+            return res.status(400).json({ message: 'Search query is required' });
+        }
+
+        const listing = await Listing.find({
+            $or: [
+                { landMark: { $regex: query, $options: 'i' } },
+                { city: { $regex: query, $options: 'i' } },
+                { title: { $regex: query, $options: 'i' } },
+
+            ],
+        })
+        return res.status(200).json(listing);
+    } catch (error) {
+        console.log('Searching error', error)
+        return res.status(500).json({ message: 'internal server error ', error })
+    }
+}

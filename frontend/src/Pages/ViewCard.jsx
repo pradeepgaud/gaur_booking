@@ -8,6 +8,7 @@ import { authDataContext } from "../Context/AuthContext";
 import { listingDataContext } from "../Context/ListingContext";
 import { FaStar } from "react-icons/fa";
 import { BookingDataContext } from "../Context/BookingContext";
+import { toast } from "react-toastify";
 
 function ViewCard() {
   const navigate = useNavigate();
@@ -92,6 +93,7 @@ function ViewCard() {
       }
 
       console.log("Response Data:", res.data);
+      toast.success('Listing Updated')
       navigate("/");
       setTitle("");
       setDescription("");
@@ -106,6 +108,7 @@ function ViewCard() {
       console.error("❌ 500 ERROR");
       setUpdating(false);
       console.error(error.response?.data || error.message);
+      toast.error(error.response.data.message)
     }
   };
 
@@ -122,10 +125,12 @@ function ViewCard() {
         }
       );
       console.log(res.data);
+      toast.success('Listing Delete')
       navigate("/");
       setDeleteing(false);
     } catch (error) {
       console.log(error);
+      toast.error(error.response.data.message)
       setDeleteing(false);
     }
   };

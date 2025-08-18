@@ -42,6 +42,9 @@ export const createBooking = async (req, res) => {
         });
 
         const savedBooking = await newBooking.save();
+        
+        // Populate host details
+        await savedBooking.populate("host", "email");
 
         // Update user's booking array
         await User.findByIdAndUpdate(
@@ -105,3 +108,21 @@ export const cancelBooking = async (req, res) => {
         return res.status(500).json({ message: "Booking cancel error" });
     }
 };
+
+
+export const ratingListing = async(req,res) =>{
+    try {
+        let {id} = req.params
+        let {ratings} = req.body
+        let listing = await Listing.findById(id)
+        if(!listing){
+            return res.status(404).json({message:'listing not found'})
+        }
+        listing.ratings = Number(ratings)
+        await listing.save();
+        return res.status(200).json({ratings:listing.ratings})
+
+    } catch (error) {
+         return res.status(500).json({ message: "ratting error" });
+    }
+}
