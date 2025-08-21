@@ -25,6 +25,8 @@ app.use("/api/user", userRouter)
 app.use("/api/listing", listingRouter)
 app.use("/api/booking", bookingRouter)
 
+
+
 app.listen(port, () => {
     connectDb()
     console.log(`Server is runing at port${port}`)
